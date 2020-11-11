@@ -8,13 +8,14 @@ if (process.argv.length<3) {
 const password = process.argv[2]
 
 const url =
-  `mongodb+srv://fullstack:<password>@pluettelo.ofp0w.mongodb.net/<dbname>?retryWrites=true&w=majority`
+`mongodb+srv://fullstack:${password}@cluster0-ostce.mongodb.net/note-app?retryWrites=true`
 
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
 
 const personSchema = new mongoose.Schema({
   name: String,
   number: String,
+  important: Boolean,
 })
 
 const Person = mongoose.model('Person', personSchema)
