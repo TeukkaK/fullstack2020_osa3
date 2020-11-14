@@ -1,17 +1,13 @@
-const { response } = require('express')
 const express = require('express')
 const morgan = require('morgan')
 const app = express ()
 const cors = require('cors')
-const Persons = require('./models/persons')
 require('dotenv').config()
-
-morgan.token('POST-data', (request) => (JSON.stringify(request.body)))
+const Persons = require('./models/persons')
 
 app.use(cors())
 app.use(express.json())
 app.use(express.static('build'))
-app.use(morgan(':method :url HTTP :status :res[content-length] - :response-time ms :POST-data'))
 
 app.get('/info', (req, res) => {
   Persons.find({}).then(persons => {
@@ -76,7 +72,7 @@ app.put('/api/persons/:id', (req, res, next) => {
     important: body.number,
   }
 
-  Note.findByIdAndUpdate(request.params.id, person, { new: true })
+  Note.findByIdAndUpdate(req.params.id, person, { new: true })
     .then(updatedPerson => {
       res.json(updatedPerson.toJSON)
     })
@@ -95,7 +91,7 @@ const errorHandler = (error, req, res, next) => {
     return res.status(400).send({ error: 'malformatted id' })
   }
   if (error.name === 'ValidationError') {
-    return response.status(400).json({ error: error.message })
+    return res.status(400).json({ error: error.message })
   }
 
   next(error)
