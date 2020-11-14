@@ -78,7 +78,7 @@ app.put('/api/persons/:id', (req, res, next) => {
 
   Note.findByIdAndUpdate(request.params.id, person, { new: true })
     .then(updatedPerson => {
-      res.json(updatedPerson)
+      res.json(updatedPerson.toJSON)
     })
     .catch(error => next(error))
 })

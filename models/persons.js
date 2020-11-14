@@ -17,7 +17,7 @@ mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFind
   personSchema.plugin(uniqueValidator)
 
   const personSchema = new mongoose.Schema({
-    name {
+    name: {
     type: String,
     required: true,
     unique: true,
