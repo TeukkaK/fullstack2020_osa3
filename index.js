@@ -6,15 +6,17 @@ const cors = require('cors')
 const Persons = require('./models/persons')
 require('dotenv').config()
 
+morgan.token('POST-data', (request) => (JSON.stringify(request.body)))
+
 app.use(cors())
 app.use(express.json())
 app.use(express.static('build'))
-app.use(morgan('tiny'))
+app.use(morgan(':method :url HTTP :status :res[content-length] - :response-time ms :POST-data'))
 
 app.get('/info', (req, res) => {
   Persons.find({}).then(persons => {
     res.send(
-    `<p>Phonebook has info for ${persons.length} people</p>
+      `<p>Phonebook has info for ${persons.length} people</p>
     <p>${new Date()}</p> ` )
   })
 })
@@ -27,23 +29,6 @@ app.get('/api/persons', (req, res) => {
   Persons.find({}).then(persons => {
     res.json(persons.map(person => person.toJSON()))
   })
-})
-
-app.post('/api/persons', (req, res, next) => {
-  const body = req.body
-
-  const person = new Persons({
-    name: body.name,
-    number: body.number,
-  })
-
-  person
-    .save()
-    .then(savedPerson => savedPerson.toJSON())
-    .then(savedAndformattedPerson => {
-      res.json(savedAndformattedPerson)
-    })
-    .catch(error => next(error))
 })
 
 app.get('/api/persons/:id', (req, res, next) => {
@@ -66,12 +51,29 @@ app.delete('/api/persons/:id', (req, res, next) => {
     .catch(error => next(error))
 })
 
+app.post('/api/persons', (req, res, next) => {
+  const body = req.body
+
+  const person = new Persons({
+    name: body.name,
+    number: body.number,
+  })
+
+  person
+    .save()
+    .then(savedPerson => savedPerson.toJSON())
+    .then(savedAndformattedPerson => {
+      res.json(savedAndformattedPerson)
+    })
+    .catch(error => next(error))
+})
+
 app.put('/api/persons/:id', (req, res, next) => {
   const body = req.body
 
   const person = {
-    content: body.content,
-    important: body.important,
+    content: body.name,
+    important: body.number,
   }
 
   Note.findByIdAndUpdate(request.params.id, person, { new: true })
@@ -89,12 +91,15 @@ app.use(unknownEndpoint)
 
 const errorHandler = (error, req, res, next) => {
   console.error(error.message)
-
   if (error.name === 'CastError') {
     return res.status(400).send({ error: 'malformatted id' })
   }
+  if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
+  }
 
   next(error)
+
 }
 
 app.use(errorHandler)
