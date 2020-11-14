@@ -1,6 +1,6 @@
 const express = require('express')
 const morgan = require('morgan')
-const app = express ()
+const app = express()
 const cors = require('cors')
 require('dotenv').config()
 const Persons = require('./models/persons')
@@ -8,6 +8,7 @@ const Persons = require('./models/persons')
 app.use(cors())
 app.use(express.json())
 app.use(express.static('build'))
+app.use(morgan('tiny'))
 
 app.get('/info', (req, res) => {
   Persons.find({}).then(persons => {
@@ -23,7 +24,7 @@ app.get('/', (req, res) => {
 
 app.get('/api/persons', (req, res) => {
   Persons.find({}).then(persons => {
-    res.json(persons.map(person => person.toJSON()))
+    res.json(persons.map(persons => persons.toJSON()))
   })
 })
 
@@ -68,11 +69,11 @@ app.put('/api/persons/:id', (req, res, next) => {
   const body = req.body
 
   const person = {
-    content: body.name,
-    important: body.number,
+    name: body.name,
+    number: body.number,
   }
 
-  Note.findByIdAndUpdate(req.params.id, person, { new: true })
+  Persons.findByIdAndUpdate(req.params.id, person, { new: true })
     .then(updatedPerson => {
       res.json(updatedPerson.toJSON)
     })
@@ -89,13 +90,10 @@ const errorHandler = (error, req, res, next) => {
   console.error(error.message)
   if (error.name === 'CastError') {
     return res.status(400).send({ error: 'malformatted id' })
-  }
-  if (error.name === 'ValidationError') {
+  } else if (error.name === 'ValidationError') {
     return res.status(400).json({ error: error.message })
   }
-
   next(error)
-
 }
 
 app.use(errorHandler)

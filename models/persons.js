@@ -18,13 +18,13 @@ mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFind
     type: String,
     required: true,
     unique: true,
-    minlength: 3,
+    minlength: 3
   },
   number: {
     type: String,
     minlength: 8,
-    required: true,
-  },
+    required: true
+  }
 })
 
 personSchema.set('toJSON', {
