@@ -26,6 +26,11 @@ const personSchema = new mongoose.Schema({
     minlength: 8,
     required: true,
   },
+  id: {
+    type: Number,
+    required: false,
+    unique: true
+  },
 })
 
 personSchema.plugin(uniqueValidator)

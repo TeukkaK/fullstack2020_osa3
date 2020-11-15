@@ -71,8 +71,8 @@ app.put('/api/persons/:id', (req, res, next) => {
     number: body.number,
   }
   Persons.findByIdAndUpdate(req.params.id, person, { runValidators: true, context: 'query', new: true })
-    .then(updatePerson => {
-      res.json(updatePerson.toJSON)
+    .then(updatedPerson => {
+      res.json(updatedPerson.toJSON)
     })
     .catch(error => next(error))
 })
@@ -84,7 +84,10 @@ const unknownEndpoint = (req, res) => {
 app.use(unknownEndpoint)
 
 const errorHandler = (error, req, res, next) => {
-  console.log(error.message)
+  console.error(error.message)
+  if (error.name ==='Conflict'){
+    return res.status(409).send({ error: 'Person is alreaydy in database' })
+  }
   if (error.name === 'CastError' && error.kind === 'ObjectId') {
     return res.status(400).send({ error: 'malformatted id' })
   } 
