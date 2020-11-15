@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-var uniqueValidator = require('mongoose-unique-validator')
+const uniqueValidator = require('mongoose-unique-validator')
 mongoose.set('useFindAndModify', false)
 mongoose.set('useCreateIndex', true)
 const url = process.env.MONGODB_URI
@@ -19,14 +19,16 @@ const personSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    minlength: 3
+    minlength: 3,
   },
   number: {
     type: String,
     minlength: 8,
-    required: true
-  }
+    required: true,
+  },
 })
+
+personSchema.plugin(uniqueValidator)
 
 personSchema.set('toJSON', {
   transform: (document, returnedObject) => {
@@ -36,5 +38,4 @@ personSchema.set('toJSON', {
   }
 })
 
-personSchema.plugin(uniqueValidator)
 module.exports = mongoose.model('Person', personSchema)

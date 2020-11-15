@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 
 app.get('/api/persons', (req, res) => {
   Persons.find({}).then(persons => {
-    res.json(persons.map(persons => persons.toJSON()))
+    res.json(persons.map(person => person.toJSON()))
   })
 })
 
@@ -70,9 +70,9 @@ app.put('/api/persons/:id', (req, res, next) => {
     name: body.name,
     number: body.number,
   }
-  Persons.findByIdAndUpdate(req.params.id, person, { new: true })
-    .then(updatedPerson => {
-      res.json(updatedPerson.toJSON)
+  Persons.findByIdAndUpdate(req.params.id, person, { runValidators: true, context: 'query', new: true })
+    .then(updatePerson => {
+      res.json(updatePerson.toJSON)
     })
     .catch(error => next(error))
 })
@@ -84,10 +84,12 @@ const unknownEndpoint = (req, res) => {
 app.use(unknownEndpoint)
 
 const errorHandler = (error, req, res, next) => {
-  console.error(error.message)
-  if (error.name === 'CastError') {
+  console.log(error.message)
+  if (error.name === 'CastError' && error.kind === 'ObjectId') {
     return res.status(400).send({ error: 'malformatted id' })
-  } else if (error.name === 'ValidationError') {
+  } 
+  
+  if (error.name === 'ValidationError') {
     return res.status(400).json({ error: error.message })
   }
   next(error)
