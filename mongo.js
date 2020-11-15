@@ -23,8 +23,8 @@ if (process.argv.length < 4) {
       console.log('puhelinluettelo:')
       result.forEach(person => {
         console.log(person.name, person.number)
+        mongoose.connection.close()
       })
-      mongoose.connection.close()
     })
   } else {
     const person = new Person({
