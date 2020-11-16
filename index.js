@@ -50,7 +50,7 @@ app.delete('/api/persons/:id', (req, res, next) => {
 
 app.post('/api/persons', (req, res, next) => {
   const body = req.body
- 
+
   const person = new Persons({
     name: body.name,
     number: body.number,
@@ -87,12 +87,9 @@ const errorHandler = (error, req, res, next) => {
   console.error(error.message)
   if (error.name ==='Conflict'){
     return res.status(409).send({ error: 'Person is alreaydy in database' })
-  }
-  if (error.name === 'CastError' && error.kind === 'ObjectId') {
+  } else if (error.name === 'CastError' && error.kind === 'ObjectId') {
     return res.status(400).send({ error: 'malformatted id' })
-  } 
-  
-  if (error.name === 'ValidationError') {
+  } else if (error.name === 'ValidationError') {
     return res.status(400).json({ error: error.message })
   }
   next(error)
